@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shadowsocks Config QR Code Generator</title>
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+<!--
+    <link rel="stylesheet" href="styles/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles/bootstrap/css/bootstrap-theme.min.css">
+    -->
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700' rel='stylesheet' type='text/css'>
+<!--
+    <script src="http://use.edgefonts.net/source-sans-pro.js"></script>
+    <script src="http://use.edgefonts.net/source-code-pro:n2,n3,n4,n5,n6,n7,n9.js"></script>
+    -->
+<style type="text/css">
+body {
+    font-family: 'Source Sans Pro', sans-serif;/*padding-top: 133px;*/
+}
+header {
+    /*position: fixed;
+        margin-top: -133px;
+        height: 133px;
+        width:auto;
+        z-index: 9999;*/
+    background: rgba(255,255,255,0.9);
+}
+nav_menu {
+/*position: static;
+        top: 20px;
+        z-index: 9999;
+        background: lime*/;
+}
+ul.affix {
+    position: fixed;
+    top: 10px;
+}
+ul.affix-top {
+    position: static;
+}
+ul.affix-bottom {
+    position: absolute;
+}
+#qrcode_container {
+    width: 150px;
+    height: 150px;
+}
+#results {
+    display: none;
+}
+#main section:last-child {
+/*background: red;
+        padding-bottom:100%;*/
+}
+.page-header h2 {
+    font-weight: 300;
+}
+.qrcode_results {
+    /**/display: none;
+    padding-top: 5px;
+}
+/* http://getbootstrap.com/assets/css/docs.min.css */
+.bs-callout {
+    border-left: 3px solid #eeeeee;
+    margin: 20px 0;
+    padding: 20px;
+}
+.bs-callout h4 {
+    margin-bottom: 5px;
+    margin-top: 0;
+}
+.bs-callout p:last-child {
+    margin-bottom: 0;
+}
+.bs-callout code {
+    background-color: #ffffff;
+    border-radius: 3px;
+}
+.bs-callout-danger {
+    background-color: #fdf7f7;
+    border-color: #d9534f;
+}
+.bs-callout-danger h4 {
+    color: #d9534f;
+}
+.bs-callout-warning {
+    background-color: #fcf8f2;
+    border-color: #f0ad4e;
+}
+.bs-callout-warning h4 {
+    color: #f0ad4e;
+}
+.bs-callout-info {
+    background-color: #f4f8fa;
+    border-color: #5bc0de;
+}
+.bs-callout-info h4 {
+    color: #5bc0de;
+}
+</style>
+</head>
+<body data-spy="scroll" data-target="#affix-nav">
+<div class="container">
+    <header class="row">
+        <div class="col-md-12 page-header">
+            <h2 id="site_name"></h2>
+            <template id="t_site_name">{{siteInfo.siteName}}</template>
+        </div>
+    </header>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="nav_menu" id="#affix-nav" >
+                <ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="133">
+                    <li> <a href="#">Home</a> </li>
+                    <li> <a href="#pan_generate_qrcode">Generate QR Code</a> </li>
+                    <li> <a href="#pan_server_list">Server List</a> </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-7" id="main">
+            <section>
+                <div class="panel panel-info" role="main">
+                    <div class="panel-heading" id="pan_generate_qrcode" >Generate QR Code for Shadowsock URI</div>
+                    <div class="panel-body" id="panel_qrcode">
+                        <p class=""> Fill the textbox below using your <strong>Shadowsocks</strong> server configs. It should be in the form of <code>ss://encryption_method:password@hostname:port_number</code> </p>
+                        <dl class="ss_li">
+                            <dt class="ss_name"></dt>
+                            <dd class="ss_info">
+                                <div class="input-group ss_uri_box"> <span class="input-group-addon">ss://</span>
+                                    <input type="text" class="form-control ss_uri" placeholder="encryption_method:password@hostname:port_number" value="" />
+                                    <span class="input-group-btn">
+                                    <button class="btn btn-default ss_uri_qrcode_gen" type="button" id="generate_qrcode">Generate</button>
+                                    </span> </div>
+                                <div class="qrcode_results">
+                                    <p>Base64 Shadowsocks URI</p>
+                                    <p><code class="base64_ss_uri" ></code></p>
+                                    <p>QR Code</p>
+                                    <div class="qrcode_container"></div>
+                                </div>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <div class="panel panel-success" role="main">
+                    <div class="panel-heading" id="pan_server_list">Shadowsocks Server List Demo</div>
+                    <div class="panel-body">
+                        <div id="ss_list"></div>
+                        <template> </template>
+                        <template id="t_ss_list"> {{#ssList}}
+                            <dl class="ss_li">
+                                <dt class="ss_name">{{ssName}}</dt>
+                                <dd class="ss_info">
+                                    <div class="input-group ss_uri_box">
+                                        <input type="text" class="form-control ss_uri" placeholder="encryption_method:password@hostname:port_number" value="{{ssUri}}" />
+                                        <span class="input-group-btn">
+                                        <button class="btn btn-default ss_uri_qrcode_gen" type="button">Generate</button>
+                                        </span> </div>
+                                    <div class="qrcode_results">
+                                        <p>Base64 Shadowsocks URI</p>
+                                        <p><code class="base64_ss_uri" ></code></p>
+                                        <p>QR Code</p>
+                                        <div class="qrcode_container"></div>
+                                    </div>
+                                </dd>
+                            </dl>
+                            {{/ssList}} </template>
+                    </div>
+                </div>
+            </section>
+            <section> </section>
+        </div>
+    </div>
+</div>
+<script src="//code.jquery.com/jquery-2.1.0.min.js"></script> 
+<!--
+<script src="js/jquery-2.1.0.min.js"></script>
+--> 
+<script src="js/mustache.min.js"></script> 
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script> 
+<!--
+<script src="styles/bootstrap/js/bootstrap.min.js"></script>
+--> 
+<script src="js/jquery.qrcode-0.7.0.min.js"></script> 
+<script type="text/javascript">
+/*
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Base64_encoding_and_decoding
+*/
+function utf8_to_b64(str) {
+    return window.btoa(unescape(encodeURIComponent(str)));
+}
+function b64_to_utf8(str) {
+    return decodeURIComponent(escape(window.atob(str)));
+}
+function ssUriQrcodeGen(eO) {
+    //alert(eO.html());
+    var someSsUri = eO.parent().siblings(".ss_uri").val();
+    //alert(someSsUri);
+    var isFullUri = /^ss:\/\/(.*)/gi.exec(someSsUri);
+    var b64_ss_uri = "ss://" + utf8_to_b64(isFullUri?isFullUri[1]:someSsUri);
+    //alert( bAddSsUriScheme?"ss://":"" + eO.parent().siblings(".ss_uri").val() );
+    eO.parents(".ss_info").find(".qrcode_results .base64_ss_uri").html(b64_ss_uri);
+    eO.parents(".ss_info").find(".qrcode_results .qrcode_container").html("");
+    eO.parents(".ss_info").find(".qrcode_results .qrcode_container").qrcode({
+        size: 150,
+        fill: "black",
+        text: b64_ss_uri
+    });
+    eO.parents(".ss_info").find(".qrcode_results").show();
+}
+$(function() {
+    $.getJSON("config.json", function(data) {
+        var template = $("#t_site_name").html();
+        var info = Mustache.render(template, data);
+        $("#site_name").html(info);
+        //json_data = data;
+        template = $("#t_ss_list").html();
+        info = Mustache.render(template, data);
+        //alert(template);
+        $("#ss_list").html(info);
+        /*
+        now bind generate_qrcode function to generate button
+        once that #ss_list has been generated from the template.
+        */
+        $("#ss_list button.ss_uri_qrcode_gen").click(function() {
+            ssUriQrcodeGen($(this));
+        });
+    });
+});
+$("#generate_qrcode").click(function () {
+    ssUriQrcodeGen($(this));
+});
+</script>
+</body>
+</html>

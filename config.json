@@ -1,0 +1,48 @@
+{
+    "siteInfo": {
+        "siteName": "Shadowsocks URI QR Code Generator",
+        "footer": ""
+    },
+    "ssList": [
+        {
+            "ssName": "Ss Server 1",
+            "ssUri":"ss://encryption_method:password@hostname1:port_number1"
+        },
+        {
+            "ssName": "Ss Server 2",
+            "ssUri":"ss://encryption_method:password@hostname2:port_number2"
+        },
+        {
+            "ssName": "Ss Server 3",
+            "ssUri":"ss://encryption_method:password@hostname3:port_number3"
+        },
+        {
+            "ssName": "Ss Server 4",
+            "ssUri":"ss://encryption_method:password@hostname4:port_number4"
+        },
+                {
+            "ssName": "Ss Server 5",
+            "ssUri":"ss://encryption_method:password@hostname5:port_number5"
+        },
+        {
+            "ssName": "Ss Server 6",
+            "ssUri":"ss://encryption_method:password@hostname6:port_number6"
+        },
+        {
+            "ssName": "Ss Server 7",
+            "ssUri":"ss://encryption_method:password@hostname7:port_number7"
+        },
+        {
+            "ssName": "Ss Server 8",
+            "ssUri":"ss://encryption_method:password@hostname6:port_number8"
+        },
+        {
+            "ssName": "Ss Server 9",
+            "ssUri":"ss://encryption_method:password@hostname7:port_number9"
+        },
+        {
+            "ssName": "Ss Server 10",
+            "ssUri":"ss://encryption_method:password@hostname8:port_number10"
+        }
+    ]
+}
